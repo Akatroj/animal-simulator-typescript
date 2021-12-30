@@ -7,9 +7,13 @@ export class Vector2d {
     this.y = y;
   }
 
-  // toString(): string {
-  //   return `(${this.x}, ${this.y})`;
-  // }
+  toString(): string {
+    return `(${this.x}, ${this.y})`;
+  }
+
+  add(other: Vector2d): Vector2d {
+    return new Vector2d(this.x + other.x, this.y + other.y);
+  }
 }
 
 console.log(new Vector2d(1, 1) === new Vector2d(1, 1));

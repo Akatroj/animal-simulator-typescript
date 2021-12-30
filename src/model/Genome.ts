@@ -1,7 +1,6 @@
-import { random, range, shuffle, countBy } from 'lodash';
+import { random, range, shuffle, countBy, sample } from 'lodash';
 
 export type Gene = number;
-
 export class Genome {
   private static readonly GENOME_SIZE = 32;
   private static readonly GENE_POOL_SIZE = 8;
@@ -28,6 +27,14 @@ export class Genome {
       );
       this.fixGenome();
     }
+  }
+
+  get randomGene(): Gene {
+    const result = sample(this.geneList);
+    if (result === undefined) {
+      throw new RangeError('Invalid genome');
+    }
+    return result;
   }
 
   private getRandomGenes(amount: number): Gene[] {
