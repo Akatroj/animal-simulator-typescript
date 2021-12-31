@@ -14,6 +14,10 @@ export class Vector2d {
   add(other: Vector2d): Vector2d {
     return new Vector2d(this.x + other.x, this.y + other.y);
   }
+
+  toArray(): [number, number] {
+    return [this.x, this.y];
+  }
 }
 
 console.log(new Vector2d(1, 1) === new Vector2d(1, 1));

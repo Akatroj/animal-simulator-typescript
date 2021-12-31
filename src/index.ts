@@ -1,3 +1,4 @@
+import { CanvasView } from './view/CanvasView';
 import { WorldMap } from './model/WorldMap';
 import { Animal } from './model/Animal';
 import { config } from './config';
@@ -10,6 +11,11 @@ const map = new WorldMap(
   config.jungleRatio
 );
 
-const animal = new Animal(map);
+for (let i = 0; i < 10; i++) {
+  const animal = new Animal(map);
+  map.putEntity(animal);
+}
 
-console.log(animal);
+const view = new CanvasView(map);
+
+view.drawMap();

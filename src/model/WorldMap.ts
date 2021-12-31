@@ -1,3 +1,4 @@
+import { BoundingBox } from './../view/CanvasView';
 import { IPositionChangeObserver, PositionChangePublisher } from './IPositionChangeObserver';
 import { random, remove } from 'lodash-es';
 import { Animal, Entity, Grass } from './Animal';
@@ -45,6 +46,18 @@ export class WorldMap implements IPositionChangeObserver {
     return this.jungle.randomPositionInJungle;
   }
 
+  get jungleBounds(): BoundingBox {
+    return this.jungle.boundingBox;
+  }
+
+  objectAtPosition(pos: Vector2d): Entity | null {
+    const animals = this.animalMap.get(pos);
+    if (animals) return animals[0];
+    const grass = this.grassMap.get(pos);
+    if (grass) return grass[0];
+    return null;
+  }
+
   wrapPosition(pos: Vector2d): Vector2d {
     return new Vector2d(pos.x % this.width, pos.y % this.height);
   }
@@ -56,6 +69,7 @@ export class WorldMap implements IPositionChangeObserver {
     }
   }
 
+  // todo: rozbic na 2 metody
   putEntity(entity: Entity): void {
     if (entity instanceof Animal) {
       this.animalMap.set(entity.position, entity);
@@ -71,10 +85,26 @@ export class WorldMap implements IPositionChangeObserver {
       this.grassMap.delete(entity.position, entity);
     }
   }
+
+  forEachAnimalCell(callback: (animals: Animal[], position: Vector2d) => void): void {
+    this.animalMap.forEach(callback);
+  }
+
+  forEachGrassCell(callback: (grass: Grass, position: Vector2d) => void): void {
+    this.grassMap.forEach((grass, key) => callback(grass[0], key));
+  }
 }
 
 class Jungle {
-  constructor(public readonly lowerLeft: Vector2d, public readonly upperRight: Vector2d) {}
+  public readonly boundingBox: BoundingBox;
+
+  constructor(public readonly lowerLeft: Vector2d, public readonly upperRight: Vector2d) {
+    const leftX = lowerLeft.x;
+    const topY = upperRight.y;
+    const width = upperRight.x - lowerLeft.x;
+    const height = upperRight.y - lowerLeft.y;
+    this.boundingBox = { leftX, topY, width, height } as const;
+  }
 
   get randomPositionInJungle() {
     return new Vector2d(
@@ -84,29 +114,38 @@ class Jungle {
   }
 }
 
-export class EntityMap<V extends Entity> {
+class EntityMap<V extends Entity> {
   private readonly map: Map<number, V[]> = new Map();
 
   constructor(private readonly columnCount: number, private readonly rowCount: number) {}
 
   private vectorToKey(vector: Vector2d): number {
+    if (vector.x > this.columnCount || vector.y > this.rowCount)
+      throw new RangeError('Vector not on map');
     return vector.x + vector.y * this.columnCount;
   }
 
-  get(key: Vector2d) {
+  private keyToVector(key: number): Vector2d {
+    const x = key % this.columnCount;
+    const y = (key - x) / this.columnCount;
+    return new Vector2d(x, y);
+  }
+
+  get(key: Vector2d): V[] | undefined {
     return this.map.get(this.vectorToKey(key));
   }
 
-  set(key: Vector2d, value: V) {
+  set(key: Vector2d, value: V): void {
     const array = this.get(key);
     if (array !== undefined) {
       array.push(value);
+      array.sort((el1, el2) => el1.energy - el2.energy);
     } else {
       this.map.set(this.vectorToKey(key), [value]);
     }
   }
 
-  delete(key: Vector2d, value: V) {
+  delete(key: Vector2d, value: V): boolean {
     const array = this.get(key);
     if (array !== undefined) {
       remove(array, el => el === value);
@@ -118,7 +157,13 @@ export class EntityMap<V extends Entity> {
     return false;
   }
 
-  has(key: Vector2d) {
+  has(key: Vector2d): boolean {
     return this.map.has(this.vectorToKey(key));
+  }
+
+  forEach(callback: (value: V[], key: Vector2d) => void): void {
+    this.map.forEach((value, key) => {
+      callback(value, this.keyToVector(key));
+    });
   }
 }
