@@ -1,5 +1,5 @@
 import { Vector2d } from './Vector2d';
-import { random } from 'lodash';
+import { random } from 'lodash-es';
 
 export enum Directions {
   North = 0,

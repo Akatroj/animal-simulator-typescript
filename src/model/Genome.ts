@@ -1,6 +1,6 @@
-import { random, range, shuffle, countBy, sample } from 'lodash';
+import { random, range, shuffle, countBy, sample } from 'lodash-es'; // TODO: switch to lodash-es, or not???
 
-export type Gene = number;
+export type Gene = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export class Genome {
   private static readonly GENOME_SIZE = 32;
   private static readonly GENE_POOL_SIZE = 8;
@@ -13,11 +13,11 @@ export class Genome {
   constructor(parent1?: Genome, parent2?: Genome) {
     // create a Genome by mixing two parents
     if (parent1 && parent2) {
-      const genesFromFirstParent = random(1, Genome.GENOME_SIZE - 1);
-      const genesFromSecondParent = Genome.GENOME_SIZE - genesFromFirstParent;
+      const genesCountFromFirstParent = random(1, Genome.GENOME_SIZE - 1);
+      const genesCountFromSecondParent = Genome.GENOME_SIZE - genesCountFromFirstParent;
       this.geneList = parent1
-        .getRandomGenes(genesFromFirstParent)
-        .concat(parent2.getRandomGenes(genesFromSecondParent));
+        .getRandomGenes(genesCountFromFirstParent)
+        .concat(parent2.getRandomGenes(genesCountFromSecondParent));
     }
     // no arg constructor - create a random Genome
     else {
@@ -50,7 +50,7 @@ export class Genome {
     return result;
   }
 
-  // if a gene does not exist in the genome, add it at random position
+  // if a gene does not exist in the genome, add it at a random position
   private fixGenome(): void {
     const geneCount = countBy(this.geneList);
 

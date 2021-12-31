@@ -1,10 +1,11 @@
-import { random } from 'lodash';
+import { IPositionChangeObserver, PositionChangePublisher } from './IPositionChangeObserver';
+import { random, remove } from 'lodash-es';
 import { Animal, Entity, Grass } from './Animal';
 import { Vector2d } from './Vector2d';
 
 export type SimulationDate = number;
 export type Energy = number;
-export class WrappingMap {
+export class WorldMap implements IPositionChangeObserver {
   private _today: SimulationDate = 0;
 
   private readonly jungle: Jungle;
@@ -12,9 +13,9 @@ export class WrappingMap {
   private readonly grassMap: EntityMap<Grass>;
 
   constructor(
-    private width: number,
-    private height: number,
-    public readonly startEnergy: number,
+    public readonly width: number,
+    public readonly height: number,
+    public readonly startEnergy: number, // to mozna wywalic?
     public readonly energyPassedToChild: number,
     jungleRatio: number
   ) {
@@ -36,8 +37,39 @@ export class WrappingMap {
     return this._today;
   }
 
-  get randomPosition() {
+  get randomPosition(): Vector2d {
     return new Vector2d(random(this.width - 1), random(this.height - 1));
+  }
+
+  get randomJunglePosition(): Vector2d {
+    return this.jungle.randomPositionInJungle;
+  }
+
+  wrapPosition(pos: Vector2d): Vector2d {
+    return new Vector2d(pos.x % this.width, pos.y % this.height);
+  }
+
+  positionChanged(oldPos: Vector2d, newPos: Vector2d, entity: PositionChangePublisher): void {
+    if (entity instanceof Animal) {
+      this.animalMap.delete(oldPos, entity);
+      this.animalMap.set(newPos, entity);
+    }
+  }
+
+  putEntity(entity: Entity): void {
+    if (entity instanceof Animal) {
+      this.animalMap.set(entity.position, entity);
+    } else if (entity instanceof Grass) {
+      this.grassMap.set(entity.position, entity);
+    }
+  }
+
+  removeEntity(entity: Entity): void {
+    if (entity instanceof Animal) {
+      this.animalMap.delete(entity.position, entity);
+    } else if (entity instanceof Grass) {
+      this.grassMap.delete(entity.position, entity);
+    }
   }
 }
 
@@ -77,7 +109,7 @@ export class EntityMap<V extends Entity> {
   delete(key: Vector2d, value: V) {
     const array = this.get(key);
     if (array !== undefined) {
-      array.filter(el => el !== value);
+      remove(array, el => el === value);
       if (array.length === 0) {
         this.map.delete(this.vectorToKey(key));
       }
