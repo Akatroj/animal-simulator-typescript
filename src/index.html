@@ -1,19 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Animal Simulator</title>
-    <link href="index.css" rel="stylesheet">
-</head>
+    <link href="index.css" rel="stylesheet" />
+  </head>
 
-<body>
-    <div class="container">
-        <canvas id="canvas"></canvas>
+  <body class="container">
+    <form class="container config">
+      <div class="input-wrapper">
+        <input type="number" name="width" />
+        <label for="width">Map Width</label>
+      </div>
+      <div class="input-wrapper">
+        <input type="number" name="height" />
+        <label for="height">Map Height</label>
+      </div>
+      <div class="input-wrapper">
+        <input type="number" name="startEnergy" />
+        <label for="startEnergy">Animal starting energy</label>
+      </div>
+      <div class="input-wrapper">
+        <input type="number" name="energyPassedToChild" pattern="/^(0(\.\d+)?|1(\.0+)?)$/" />
+        <label for="energyPassedToChild">Energy passed to child</label>
+      </div>
+      <div class="input-wrapper">
+        <input type="number" name="jungleRatio" pattern=" /^(0(\.\d+)?|1(\.0+)?)$/" />
+        <label for="jungleRatio">Jungle ratio</label>
+      </div>
+      <div class="input-wrapper">
+        <input type="number" name="moveEnergy" />
+        <label for="moveEnergy">Energy required per move</label>
+      </div>
+      <div class="input-wrapper">
+        <input type="number" name="startAnimalCount" />
+        <label for="startAnimalCount">Number of animals at the start</label>
+      </div>
+      <div class="input-wrapper">
+        <input type="number" name="grassEnergy" />
+        <label for="grassEnergy">Energy gained from grass</label>
+      </div>
+      <div class="input-wrapper">
+        <input type="number" name="dayLength" />
+        <label for="grassEnergy">Day length</label>
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+    <div id="canvas-container" class="container">
+      <canvas id="canvas"></canvas>
     </div>
     <script type="module" src="index.ts" defer></script>
-</body>
-
+  </body>
 </html>

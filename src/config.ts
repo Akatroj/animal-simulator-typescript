@@ -34,4 +34,6 @@ if (!configString) {
   config = JSON.parse(configString);
 }
 
+console.log(config);
+
 //TODO: change config to const?

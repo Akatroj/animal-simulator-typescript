@@ -19,3 +19,21 @@ for (let i = 0; i < 10; i++) {
 const view = new CanvasView(map);
 
 view.drawMap();
+
+function onSubmit(e: Event) {
+  e.preventDefault();
+  const form = e.target as HTMLFormElement;
+  const dupa = Object.fromEntries(new FormData(form).entries());
+  console.log(dupa);
+  form.style.display = 'none';
+  const canvasContainer = document.querySelector('#canvas-container') as HTMLDivElement;
+  // canvasContainer.style.visibility = 'visible';
+  canvasContainer.style.display = '';
+}
+
+document.querySelector('form.config')?.addEventListener('submit', e => onSubmit(e));
+
+const canvasContainer = document.querySelector('#canvas-container') as HTMLDivElement;
+canvasContainer.style.display = 'none'; // important
+
+//TODO: ten plik poprawic bo jakis obrzygany jest

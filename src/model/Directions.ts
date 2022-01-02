@@ -27,39 +27,29 @@ export class DirectionsUtil {
   }
 
   static toUnitVector(direction: Directions): Vector2d {
-    let result: Vector2d;
     switch (direction) {
       case Directions.North:
-        result = new Vector2d(0, 1);
-        break;
+        return new Vector2d(0, 1);
       case Directions.NorthEast:
-        result = new Vector2d(1, 1);
-        break;
+        return new Vector2d(1, 1);
       case Directions.East:
-        result = new Vector2d(1, 0);
-        break;
+        return new Vector2d(1, 0);
       case Directions.SouthEast:
-        result = new Vector2d(1, -1);
-        break;
+        return new Vector2d(1, -1);
       case Directions.South:
-        result = new Vector2d(0, -1);
-        break;
+        return new Vector2d(0, -1);
       case Directions.SouthWest:
-        result = new Vector2d(-1, -1);
-        break;
+        return new Vector2d(-1, -1);
       case Directions.West:
-        result = new Vector2d(-1, 0);
-        break;
+        return new Vector2d(-1, 0);
       case Directions.NorthWest:
-        result = new Vector2d(-1, 1);
-        break;
+        return new Vector2d(-1, 1);
       default:
         throw new TypeError('Illegal enum state');
     }
-    return result;
   }
 }
 
-console.log(DirectionsUtil.toString(DirectionsUtil.next(Directions.NorthWest, 1)));
+// console.log(DirectionsUtil.toString(DirectionsUtil.next(Directions.NorthWest, 1)));
 
-console.log(DirectionsUtil.toString(DirectionsUtil.randomDirection));
+// console.log(DirectionsUtil.toString(DirectionsUtil.randomDirection));

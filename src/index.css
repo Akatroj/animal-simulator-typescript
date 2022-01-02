@@ -1,6 +1,35 @@
+body {
+  background-color: cornsilk;
+  overflow: hidden;
+  margin: 0;
+}
+
+#canvas-container {
+  width: 80vw;
+  height: 100vh;
+}
+
 .container {
-    display: flex;
-    justify-content: center;
-    flex-flow: column nowrap;
-    align-items: center;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.config {
+  gap: 10px;
+}
+
+/* Hide arrows on input type="number" */
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
 }

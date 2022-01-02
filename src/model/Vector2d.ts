@@ -20,8 +20,8 @@ export class Vector2d {
   }
 }
 
-console.log(new Vector2d(1, 1) === new Vector2d(1, 1));
+// console.log(new Vector2d(1, 1) === new Vector2d(1, 1));
 
-console.log(new Vector2d(1, 1));
+// console.log(new Vector2d(1, 1));
 
-console.log(Object.is(new Vector2d(1, 1), new Vector2d(1, 1)));
+// console.log(Object.is(new Vector2d(1, 1), new Vector2d(1, 1)));
