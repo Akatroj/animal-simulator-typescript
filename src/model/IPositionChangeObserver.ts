@@ -1,10 +1,14 @@
-import { Vector2d } from './Vector2d';
+import { MapPosition } from './MapPosition';
 import { remove } from 'lodash-es';
 
 // TODO: move to world map?
 
 export interface IPositionChangeObserver {
-  positionChanged(oldPos: Vector2d, newPos: Vector2d, entity: PositionChangePublisher): void;
+  positionChanged(
+    oldPos: MapPosition,
+    newPos: MapPosition,
+    entity: PositionChangePublisher
+  ): void;
 }
 
 export abstract class PositionChangePublisher {
@@ -18,7 +22,7 @@ export abstract class PositionChangePublisher {
     remove(this.observers, el => el === observer);
   }
 
-  notifyObservers(oldPos: Vector2d, newPos: Vector2d): void {
+  notifyObservers(oldPos: MapPosition, newPos: MapPosition): void {
     this.observers.forEach(observer => observer.positionChanged(oldPos, newPos, this));
   }
 }

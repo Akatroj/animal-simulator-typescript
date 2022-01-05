@@ -1,4 +1,4 @@
-import { Vector2d } from './Vector2d';
+import { MapPosition } from './MapPosition';
 import { random } from 'lodash-es';
 
 export enum Directions {
@@ -26,30 +26,26 @@ export class DirectionsUtil {
     return (direction + step) % Directions.__Length;
   }
 
-  static toUnitVector(direction: Directions): Vector2d {
+  static toUnitVector(direction: Directions): MapPosition {
     switch (direction) {
       case Directions.North:
-        return new Vector2d(0, 1);
+        return new MapPosition(0, 1);
       case Directions.NorthEast:
-        return new Vector2d(1, 1);
+        return new MapPosition(1, 1);
       case Directions.East:
-        return new Vector2d(1, 0);
+        return new MapPosition(1, 0);
       case Directions.SouthEast:
-        return new Vector2d(1, -1);
+        return new MapPosition(1, -1);
       case Directions.South:
-        return new Vector2d(0, -1);
+        return new MapPosition(0, -1);
       case Directions.SouthWest:
-        return new Vector2d(-1, -1);
+        return new MapPosition(-1, -1);
       case Directions.West:
-        return new Vector2d(-1, 0);
+        return new MapPosition(-1, 0);
       case Directions.NorthWest:
-        return new Vector2d(-1, 1);
+        return new MapPosition(-1, 1);
       default:
         throw new TypeError('Illegal enum state');
     }
   }
 }
-
-// console.log(DirectionsUtil.toString(DirectionsUtil.next(Directions.NorthWest, 1)));
-
-// console.log(DirectionsUtil.toString(DirectionsUtil.randomDirection));

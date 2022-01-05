@@ -1,6 +1,7 @@
-import { Vector2d } from '../model/Vector2d';
+import { MapPosition } from '../model/MapPosition';
 import { WorldMap } from '../model/WorldMap';
 
+type CanvasPosition = [number, number];
 export class CanvasView {
   private static readonly CANVAS_NAME = '#canvas';
   private static readonly CANVAS_CONTAINER_NAME = '#canvas-container';
@@ -21,14 +22,22 @@ export class CanvasView {
     const context = this.canvas.getContext('2d');
     if (!context) throw new ReferenceError('Cannot get canvas context');
     this.context2d = context;
+
+    // this.context2d.textAlign = 'center';
+    // this.context2d.textBaseline = 'middle';
+
     this.handleResize();
+    this.attachListeners();
+  }
 
-    this.context2d.textAlign = 'center';
-    this.context2d.textBaseline = 'middle';
-
+  private attachListeners() {
     window.addEventListener('resize', () => {
       this.handleResize();
       this.drawMap();
+    });
+    this.canvas.addEventListener('click', e => {
+      e.stopPropagation();
+      console.log(this.canvasPosToMapPos([e.offsetX, e.offsetY]));
     });
   }
 
@@ -39,11 +48,8 @@ export class CanvasView {
 
   drawBorders(): void {
     // border around
-    this.context2d.moveTo(0, 0);
-    this.context2d.lineTo(this.canvas.width, 0);
-    this.context2d.lineTo(this.canvas.width, this.canvas.height);
-    this.context2d.lineTo(0, this.canvas.height);
-    this.context2d.lineTo(0, 0);
+    this.context2d.beginPath();
+    this.context2d.rect(0, 0, this.canvas.width, this.canvas.height);
 
     // vertical cell borders
     for (let i = this.cellWidth; i < this.canvas.width; i += this.cellWidth) {
@@ -61,9 +67,16 @@ export class CanvasView {
 
   drawCells(): void {
     // jungle
-    const { leftX, topY, width, height } = this.map.jungleBounds;
+    const [topLeft, bottomRight] = this.map.jungleBounds;
+    const [leftX, topY] = this.mapPosToCanvasPos(topLeft);
+    const [rightX, bottomY] = this.mapPosToCanvasPos(bottomRight);
+    const [width, height] = [
+      rightX - leftX + this.cellWidth,
+      bottomY - topY + this.cellHeight,
+    ];
+
     this.context2d.fillStyle = 'lime';
-    this.context2d.fillRect(leftX, topY, width, height); // to sa koordy mapy a nie canvasu debilu
+    this.context2d.fillRect(leftX, topY, width, height);
 
     this.context2d.fillStyle = 'green';
     this.map.forEachGrassCell((grass, pos) => {
@@ -94,8 +107,14 @@ export class CanvasView {
     this.drawBorders();
   }
 
-  private mapPosToCanvasPos(mapPos: Vector2d): [number, number] {
+  private mapPosToCanvasPos(mapPos: MapPosition): CanvasPosition {
     return [mapPos.x * this.cellWidth, mapPos.y * this.cellHeight];
+  }
+
+  private canvasPosToMapPos([canvasX, canvasY]: CanvasPosition): MapPosition {
+    const x = Math.floor(canvasX / this.cellWidth);
+    const y = Math.floor(canvasY / this.cellHeight);
+    return new MapPosition(x, y);
   }
 
   private handleResize(): void {
@@ -114,11 +133,4 @@ export class CanvasView {
     this.cellWidth = Math.floor(this.canvas.width / this.map.width);
     this.cellHeight = Math.floor(this.canvas.height / this.map.height);
   }
-}
-
-export interface BoundingBox {
-  leftX: number;
-  topY: number;
-  width: number;
-  height: number;
 }

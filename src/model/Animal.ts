@@ -1,7 +1,7 @@
 import { Energy, SimulationDate, WorldMap } from './WorldMap';
 import { Directions, DirectionsUtil } from './Directions';
 import { Genome } from './Genome';
-import { Vector2d } from './Vector2d';
+import { MapPosition } from './MapPosition';
 import { PositionChangePublisher } from './IPositionChangeObserver';
 
 export type Entity = Animal | Grass;
@@ -9,7 +9,7 @@ export type Entity = Animal | Grass;
 export class Animal extends PositionChangePublisher {
   private readonly myGenes: Genome;
   private birthDay: SimulationDate;
-  private _position: Vector2d;
+  private _position: MapPosition;
   private direction: Directions;
   private _energy: Energy;
   private deathDate: SimulationDate | null = null;
@@ -47,7 +47,7 @@ export class Animal extends PositionChangePublisher {
     super.notifyObservers(oldPos, this._position);
   }
 
-  get position(): Vector2d {
+  get position(): MapPosition {
     return this._position;
   }
 
@@ -57,5 +57,5 @@ export class Animal extends PositionChangePublisher {
 }
 
 export class Grass {
-  constructor(public readonly position: Vector2d, public readonly energy: Energy) {}
+  constructor(public readonly position: MapPosition, public readonly energy: Energy) {}
 }
