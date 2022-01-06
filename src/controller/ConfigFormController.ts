@@ -50,11 +50,20 @@ export class ConfigController extends ConfigSubmitPublisher {
   private attachListener(): void {
     ConfigController.form.addEventListener('submit', e => {
       e.preventDefault();
-      const formEntries: Config = Object.fromEntries(
-        new FormData(ConfigController.form).entries()
-      ) as unknown as Config;
+      const formData = new FormData(ConfigController.form);
 
-      this.config = formEntries;
+      this.config = {
+        width: Number(formData.get('width')),
+        height: Number(formData.get('height')),
+        startEnergy: Number(formData.get('startEnergy')),
+        energyPassedToChild: Number(formData.get('energyPassedToChild')),
+        jungleRatio: Number(formData.get('jungleRatio')),
+        moveEnergy: Number(formData.get('moveEnergy')),
+        startAnimalCount: Number(formData.get('startAnimalCount')),
+        grassEnergy: Number(formData.get('grassEnergy')),
+        dayLength: Number(formData.get('dayLength')),
+      };
+
       console.log(this.config);
       this.saveConfig();
       this.notifyObservers(this.config);

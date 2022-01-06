@@ -1,5 +1,6 @@
+import { MapPosition } from './../model/MapPosition';
 import { WorldMap } from './../model/WorldMap';
-import { Animal } from '../model';
+import { Animal, Grass } from '../model';
 import { remove } from 'lodash-es';
 import { Config, Energy } from '../model';
 export class SimulationController {
@@ -8,6 +9,7 @@ export class SimulationController {
   private readonly animalList: Animal[] = [];
   private readonly energyToBreed: number;
   private readonly moveEnergy: Energy;
+  private readonly grassEnergy: Energy;
   private deadAnimalCount = 0;
 
   // TODO:
@@ -20,9 +22,11 @@ export class SimulationController {
       jungleRatio,
       moveEnergy,
       startAnimalCount,
+      grassEnergy,
     } = config;
     this.map = new WorldMap(width, height, startEnergy, energyPassedToChild, jungleRatio);
     this.energyToBreed = Math.floor(startEnergy / 2);
+    this.grassEnergy = grassEnergy;
     this.moveEnergy = moveEnergy;
     this.populateMap(startAnimalCount);
   }
@@ -31,7 +35,7 @@ export class SimulationController {
     for (let i = 0; i < startAnimalCount; i++) {
       const animal = new Animal(this.map);
       this.animalList.push(animal);
-      this.map.putEntity(animal);
+      this.map.putAnimal(animal);
     }
   }
 
@@ -39,7 +43,7 @@ export class SimulationController {
     remove(this.animalList, animal => {
       if (animal.isDead) {
         this.deadAnimalCount++;
-        this.map.removeEntity(animal);
+        this.map.removeAnimal(animal);
         return true;
       }
       return false;
@@ -47,7 +51,10 @@ export class SimulationController {
   }
 
   private moveAnimals(): void {
-    this.animalList.forEach(animal => animal.move());
+    this.animalList.forEach(animal => {
+      animal.move();
+      animal.energy -= this.moveEnergy;
+    });
   }
 
   private breedAnimals(): void {
@@ -56,15 +63,44 @@ export class SimulationController {
         const [parent1, parent2] = [animalsAtPos[0], animalsAtPos[1]];
         if (parent1.energy > this.energyToBreed && parent2.energy > this.energyToBreed) {
           const child = new Animal(this.map, parent1, parent2);
-          this.map.putEntity(child);
+          this.map.putAnimal(child);
         }
       }
     });
   }
 
+  private eatGrass(): void {
+    this.map.forEachAnimalCell((animals, pos) => {
+      const grass = this.map.getGrass(pos);
+      if (grass) {
+        const animal = animals[0];
+        animal.energy += grass.energy;
+        this.map.removeGrass(grass);
+      }
+    });
+  }
+
+  private growGrass(): void {
+    this.grassGenerator(() => this.map.getRandomJunglePosition());
+    this.grassGenerator(() => this.map.getRandomPosition());
+  }
+
+  private grassGenerator(posGenerator: () => MapPosition): void {
+    const maxTries = 50;
+    for (let i = 0; i < maxTries; i++) {
+      const position = posGenerator();
+      if (this.map.getGrass(position) === null) {
+        this.map.putGrass(new Grass(position, this.grassEnergy));
+        break;
+      }
+    }
+  }
+
   public nextDay(): void {
     this.moveAnimals();
     this.removeDeadAnimals();
+    this.eatGrass();
     this.breedAnimals();
+    this.growGrass();
   }
 }

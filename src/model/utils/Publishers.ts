@@ -1,6 +1,10 @@
 import { remove } from 'lodash-es';
 import { MapPosition } from '..';
-import { IConfigSubmitListener, IPositionChangeObserver } from './Observers';
+import {
+  IConfigSubmitObserver,
+  IPositionChangeObserver,
+  ICanvasClickObserver,
+} from './Observers';
 import { Config } from './types';
 
 abstract class Publisher<ObserverType> {
@@ -21,8 +25,14 @@ export abstract class PositionChangePublisher extends Publisher<IPositionChangeO
   }
 }
 
-export abstract class ConfigSubmitPublisher extends Publisher<IConfigSubmitListener> {
+export abstract class ConfigSubmitPublisher extends Publisher<IConfigSubmitObserver> {
   notifyObservers(config: Config): void {
     this.observers.forEach(observer => observer.formSubmitted(config));
+  }
+}
+
+export abstract class CanvasClickPublisher extends Publisher<ICanvasClickObserver> {
+  notifyObservers(pos: MapPosition): void {
+    this.observers.forEach(observer => observer.canvasClicked(pos));
   }
 }

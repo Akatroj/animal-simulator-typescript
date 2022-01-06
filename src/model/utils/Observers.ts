@@ -10,6 +10,10 @@ export interface IPositionChangeObserver {
   ): void;
 }
 
-export interface IConfigSubmitListener {
+export interface IConfigSubmitObserver {
   formSubmitted(config: Config): void;
+}
+
+export interface ICanvasClickObserver {
+  canvasClicked(pos: MapPosition): void;
 }

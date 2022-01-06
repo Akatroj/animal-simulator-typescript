@@ -31,7 +31,7 @@ export class Animal extends PositionChangePublisher {
       this.myGenes = new Genome(parent1.myGenes, parent2.myGenes);
     } else {
       this._energy = map.startEnergy;
-      this._position = map.randomPosition;
+      this._position = map.getRandomPosition();
       this.myGenes = new Genome();
     }
     this.direction = DirectionsUtil.randomDirection;
@@ -64,7 +64,9 @@ export class Animal extends PositionChangePublisher {
 
   set energy(energy: Energy) {
     this._energy = energy;
-    if (energy < 0) this.deathDate = this.map.today;
+    if (energy < 0) {
+      this.deathDate = this.map.today;
+    }
   }
 }
 

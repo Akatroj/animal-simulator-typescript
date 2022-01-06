@@ -1,11 +1,11 @@
 import { SimulationController } from './SimulationController';
-import { Config, IConfigSubmitListener } from '../model';
+import { Config, IConfigSubmitObserver } from '../model';
 import { ConfigController } from './ConfigFormController';
 import { CanvasView } from './CanvasController';
 
 type Interval = ReturnType<typeof setInterval>;
 
-export class MainController implements IConfigSubmitListener {
+export class MainController implements IConfigSubmitObserver {
   private formController: ConfigController | null = null;
   private simulationController: SimulationController | null = null;
   private canvasController: CanvasView | null = null;
@@ -26,15 +26,10 @@ export class MainController implements IConfigSubmitListener {
     return this.interval !== null;
   }
 
-  private mainLoop(): void {
-    console.log('test');
-    this.simulationController?.nextDay();
-    this.canvasController?.drawMap();
-  }
-
   restart(): void {
     if (this.config === null) return;
-    this.interval = setInterval(() => this.mainLoop(), this.config.dayLength);
+    this.nextStep();
+    this.interval = setInterval(() => this.nextStep(), this.config.dayLength);
   }
 
   stop(): void {
@@ -46,5 +41,10 @@ export class MainController implements IConfigSubmitListener {
     this.formController = new ConfigController();
     this.formController.addObserver(this);
     CanvasView.hideCanvas();
+  }
+
+  private nextStep(): void {
+    this.simulationController?.nextDay();
+    this.canvasController?.drawMap();
   }
 }

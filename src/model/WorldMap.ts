@@ -13,10 +13,11 @@ export class WorldMap implements IPositionChangeObserver {
   constructor(
     public readonly width: number,
     public readonly height: number,
-    public readonly startEnergy: number, // to mozna wywalic?
+    public readonly startEnergy: number,
     public readonly energyPassedToChild: number,
     jungleRatio: number
   ) {
+    // tu sie cos rozjebalo
     const topLeft = new MapPosition(
       Math.floor((width * (1 - jungleRatio)) / 2),
       Math.floor((height * (1 - jungleRatio)) / 2)
@@ -36,24 +37,20 @@ export class WorldMap implements IPositionChangeObserver {
     return this._today;
   }
 
-  get randomPosition(): MapPosition {
-    return new MapPosition(random(this.width - 1), random(this.height - 1));
-  }
-
-  get randomJunglePosition(): MapPosition {
-    return this.jungle.randomPositionInJungle;
-  }
-
   get jungleBounds(): [MapPosition, MapPosition] {
     return [this.jungle.topLeft, this.jungle.bottomRight];
   }
 
   objectAtPosition(pos: MapPosition): Entity | null {
-    const animals = this.animalMap.get(pos);
-    if (animals) return animals[0];
-    const grass = this.grassMap.get(pos);
-    if (grass) return grass[0];
-    return null;
+    return this.getAnimal(pos) ?? this.getGrass(pos) ?? null;
+  }
+
+  getRandomPosition(): MapPosition {
+    return new MapPosition(random(this.width - 1), random(this.height - 1));
+  }
+
+  getRandomJunglePosition(): MapPosition {
+    return this.jungle.getRandomPositionInJungle();
   }
 
   wrapPosition(pos: MapPosition): MapPosition {
@@ -71,31 +68,49 @@ export class WorldMap implements IPositionChangeObserver {
     }
   }
 
-  // todo: rozbic na 2 metody
-  putEntity(entity: Entity): void {
-    if (entity instanceof Animal) {
-      this.animalMap.set(entity.position, entity);
-      entity.addObserver(this);
-    } else if (entity instanceof Grass) {
-      this.grassMap.set(entity.position, entity);
-    }
+  putAnimal(animal: Animal): void {
+    this.animalMap.set(animal.position, animal);
+    animal.addObserver(this);
   }
 
-  removeEntity(entity: Entity): void {
-    if (entity instanceof Animal) {
-      this.animalMap.delete(entity.position, entity);
-      entity.removeObserver(this);
-    } else if (entity instanceof Grass) {
-      this.grassMap.delete(entity.position, entity);
-    }
+  putGrass(grass: Grass): void {
+    this.grassMap.set(grass.position, grass);
+  }
+
+  removeAnimal(animal: Animal): void {
+    this.animalMap.delete(animal.position, animal);
+    animal.removeObserver(this);
+  }
+
+  removeGrass(grass: Grass): void {
+    this.grassMap.delete(grass.position, grass);
+  }
+
+  getAnimals(pos: MapPosition): Animal[] | null {
+    return this.animalMap.get(pos) ?? null;
+  }
+
+  getAnimal(pos: MapPosition): Animal | null {
+    return this.getEntity(this.animalMap, pos);
+  }
+
+  getGrass(pos: MapPosition): Grass | null {
+    return this.getEntity(this.grassMap, pos);
+  }
+
+  // helper function to get either grass or animals from position
+  private getEntity<T extends Entity>(entityMap: EntityMap<T>, pos: MapPosition): T | null {
+    const entities = entityMap.get(pos);
+    if (entities && entities.length > 0) return entities[0];
+    return null;
   }
 
   forEachAnimalCell(callback: (animals: Animal[], position: MapPosition) => void): void {
-    this.animalMap.forEach(callback);
+    this.animalMap.forEach((animals, pos) => callback(animals, pos));
   }
 
   forEachGrassCell(callback: (grass: Grass, position: MapPosition) => void): void {
-    this.grassMap.forEach((grass, key) => callback(grass[0], key));
+    this.grassMap.forEach((grass, pos) => callback(grass[0], pos));
   }
 }
 
@@ -105,7 +120,7 @@ class Jungle {
     public readonly bottomRight: MapPosition
   ) {}
 
-  get randomPositionInJungle() {
+  getRandomPositionInJungle() {
     return new MapPosition(
       random(this.topLeft.x, this.bottomRight.x),
       random(this.topLeft.y, this.bottomRight.y)
