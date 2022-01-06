@@ -1,6 +1,6 @@
 import { random, range, shuffle, countBy, sample } from 'lodash-es'; // TODO: switch to lodash-es, or not???
 
-export type Gene = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+type Gene = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export class Genome {
   private static readonly GENOME_SIZE = 32;
   private static readonly GENE_POOL_SIZE = 8;

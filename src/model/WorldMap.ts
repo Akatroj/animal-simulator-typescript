@@ -1,10 +1,8 @@
-import { IPositionChangeObserver, PositionChangePublisher } from './IPositionChangeObserver';
 import { random, remove } from 'lodash-es';
-import { Animal, Entity, Grass } from './Animal';
+import { Animal, Entity, Grass } from './Entities';
 import { MapPosition } from './MapPosition';
+import { IPositionChangeObserver, PositionChangePublisher, SimulationDate } from './utils';
 
-export type SimulationDate = number;
-export type Energy = number;
 export class WorldMap implements IPositionChangeObserver {
   private _today: SimulationDate = 0;
 
@@ -77,6 +75,7 @@ export class WorldMap implements IPositionChangeObserver {
   putEntity(entity: Entity): void {
     if (entity instanceof Animal) {
       this.animalMap.set(entity.position, entity);
+      entity.addObserver(this);
     } else if (entity instanceof Grass) {
       this.grassMap.set(entity.position, entity);
     }
@@ -85,6 +84,7 @@ export class WorldMap implements IPositionChangeObserver {
   removeEntity(entity: Entity): void {
     if (entity instanceof Animal) {
       this.animalMap.delete(entity.position, entity);
+      entity.removeObserver(this);
     } else if (entity instanceof Grass) {
       this.grassMap.delete(entity.position, entity);
     }

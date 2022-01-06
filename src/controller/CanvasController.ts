@@ -5,9 +5,13 @@ type CanvasPosition = [number, number];
 export class CanvasView {
   private static readonly CANVAS_NAME = '#canvas';
   private static readonly CANVAS_CONTAINER_NAME = '#canvas-container';
+  private static readonly canvas: HTMLCanvasElement = document.querySelector(
+    CanvasView.CANVAS_NAME
+  ) as HTMLCanvasElement;
+  private static readonly container: HTMLDivElement = document.querySelector(
+    CanvasView.CANVAS_CONTAINER_NAME
+  ) as HTMLDivElement;
 
-  private readonly container: HTMLDivElement;
-  private readonly canvas: HTMLCanvasElement;
   private readonly context2d: CanvasRenderingContext2D;
 
   // these will be set by handleResize() method.
@@ -15,11 +19,7 @@ export class CanvasView {
   private cellHeight!: number;
 
   constructor(private readonly map: WorldMap) {
-    this.container = document.querySelector(
-      CanvasView.CANVAS_CONTAINER_NAME
-    ) as HTMLDivElement;
-    this.canvas = document.querySelector(CanvasView.CANVAS_NAME) as HTMLCanvasElement;
-    const context = this.canvas.getContext('2d');
+    const context = CanvasView.canvas.getContext('2d');
     if (!context) throw new ReferenceError('Cannot get canvas context');
     this.context2d = context;
 
@@ -35,7 +35,7 @@ export class CanvasView {
       this.handleResize();
       this.drawMap();
     });
-    this.canvas.addEventListener('click', e => {
+    CanvasView.canvas.addEventListener('click', e => {
       e.stopPropagation();
       console.log(this.canvasPosToMapPos([e.offsetX, e.offsetY]));
     });
@@ -43,24 +43,24 @@ export class CanvasView {
 
   clear(): void {
     this.context2d.fillStyle = 'white';
-    this.context2d.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context2d.fillRect(0, 0, CanvasView.canvas.width, CanvasView.canvas.height);
   }
 
   drawBorders(): void {
     // border around
     this.context2d.beginPath();
-    this.context2d.rect(0, 0, this.canvas.width, this.canvas.height);
+    this.context2d.rect(0, 0, CanvasView.canvas.width, CanvasView.canvas.height);
 
     // vertical cell borders
-    for (let i = this.cellWidth; i < this.canvas.width; i += this.cellWidth) {
+    for (let i = this.cellWidth; i < CanvasView.canvas.width; i += this.cellWidth) {
       this.context2d.moveTo(i, 0);
-      this.context2d.lineTo(i, this.canvas.height);
+      this.context2d.lineTo(i, CanvasView.canvas.height);
     }
 
     // horizontal cell borders
-    for (let i = this.cellHeight; i < this.canvas.height; i += this.cellHeight) {
+    for (let i = this.cellHeight; i < CanvasView.canvas.height; i += this.cellHeight) {
       this.context2d.moveTo(0, i);
-      this.context2d.lineTo(this.canvas.width, i);
+      this.context2d.lineTo(CanvasView.canvas.width, i);
     }
     this.context2d.stroke();
   }
@@ -118,7 +118,7 @@ export class CanvasView {
   }
 
   private handleResize(): void {
-    const style = window.getComputedStyle(this.container);
+    const style = window.getComputedStyle(CanvasView.container);
 
     // prettier-ignore
     const [containerWidth, containerHeight] = [style.width, style.height].map(el =>parseInt(el));
@@ -128,9 +128,17 @@ export class CanvasView {
     const width = Math.floor(containerWidth / this.map.width) * this.map.width;
 
     const mapRatio = this.map.width / this.map.height;
-    this.canvas.height = Math.min(width / mapRatio, height);
-    this.canvas.width = Math.min(height * mapRatio, width);
-    this.cellWidth = Math.floor(this.canvas.width / this.map.width);
-    this.cellHeight = Math.floor(this.canvas.height / this.map.height);
+    CanvasView.canvas.height = Math.min(width / mapRatio, height);
+    CanvasView.canvas.width = Math.min(height * mapRatio, width);
+    this.cellWidth = Math.floor(CanvasView.canvas.width / this.map.width);
+    this.cellHeight = Math.floor(CanvasView.canvas.height / this.map.height);
+  }
+
+  static showCanvas(): void {
+    this.container.style.display = '';
+  }
+
+  static hideCanvas(): void {
+    this.container.style.display = 'none';
   }
 }

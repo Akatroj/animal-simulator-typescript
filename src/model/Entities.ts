@@ -1,14 +1,15 @@
-import { Energy, SimulationDate, WorldMap } from './WorldMap';
+import { WorldMap } from './WorldMap';
 import { Directions, DirectionsUtil } from './Directions';
 import { Genome } from './Genome';
 import { MapPosition } from './MapPosition';
-import { PositionChangePublisher } from './IPositionChangeObserver';
+import { PositionChangePublisher } from './utils/Publishers';
+import { Energy, SimulationDate } from './utils';
 
 export type Entity = Animal | Grass;
-
 export class Animal extends PositionChangePublisher {
+  public readonly birthDay: SimulationDate;
+
   private readonly myGenes: Genome;
-  private birthDay: SimulationDate;
   private _position: MapPosition;
   private direction: Directions;
   private _energy: Energy;
@@ -38,6 +39,8 @@ export class Animal extends PositionChangePublisher {
   }
 
   move(): void {
+    if (this.isDead) return;
+
     const oldPos = this._position;
     this._position = this.map.wrapPosition(
       this._position.add(DirectionsUtil.toUnitVector(this.direction))
@@ -51,8 +54,17 @@ export class Animal extends PositionChangePublisher {
     return this._position;
   }
 
+  get isDead(): boolean {
+    return this.deathDate !== null;
+  }
+
   get energy(): Energy {
     return this._energy;
+  }
+
+  set energy(energy: Energy) {
+    this._energy = energy;
+    if (energy < 0) this.deathDate = this.map.today;
   }
 }
 
