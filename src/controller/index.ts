@@ -1,3 +1,4 @@
 export * from './CanvasController';
 export * from './ConfigFormController';
-export * from './MainController';
+export * from './SimulationController';
+export * from './StatsController';

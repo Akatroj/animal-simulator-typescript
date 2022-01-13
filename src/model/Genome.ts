@@ -1,4 +1,4 @@
-import { random, range, shuffle, countBy, sample } from 'lodash-es'; // TODO: switch to lodash-es, or not???
+import { random, range, shuffle, countBy, sample } from 'lodash-es';
 
 type Gene = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export class Genome {
@@ -37,6 +37,10 @@ export class Genome {
     return result;
   }
 
+  toString(): string {
+    return this.geneList.join('');
+  }
+
   private getRandomGenes(amount: number): Gene[] {
     const result: Gene[] = [];
 
@@ -65,5 +69,6 @@ export class Genome {
         this.geneList[idx] = parseInt(key) as Gene;
       }
     }
+    this.geneList.sort();
   }
 }

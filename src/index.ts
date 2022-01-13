@@ -1,5 +1,5 @@
-import { MainController } from './controller';
+import { SimulationController } from './controller';
 
 // const mainController = new MainController();
 
-MainController.init();
+SimulationController.init();

@@ -4,8 +4,8 @@ import {
   IConfigSubmitObserver,
   IPositionChangeObserver,
   ICanvasClickObserver,
-} from './Observers';
-import { Config } from './types';
+  Config,
+} from '.';
 
 abstract class Publisher<ObserverType> {
   protected readonly observers: ObserverType[] = [];
@@ -27,7 +27,7 @@ export abstract class PositionChangePublisher extends Publisher<IPositionChangeO
 
 export abstract class ConfigSubmitPublisher extends Publisher<IConfigSubmitObserver> {
   notifyObservers(config: Config): void {
-    this.observers.forEach(observer => observer.formSubmitted(config));
+    this.observers.forEach(observer => observer.configSubmitted(config));
   }
 }
 

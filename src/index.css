@@ -12,25 +12,19 @@ body {
 }
 
 #stats-container {
+  width: 100%;
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-around;
   align-items: center;
 }
 
-.outer-container {
-  width: 80vw;
-  height: 100vh;
+#canvas-container {
+  width: 80%;
+  height: 80%;
 }
 
-.container {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: center;
-}
-
-.form-container {
+#form-container {
   background-color: royalblue;
   padding: 30px 50px;
   border-radius: 10px;
@@ -39,6 +33,18 @@ body {
 #config {
   align-items: flex-start;
   gap: 10px;
+}
+
+.outer-container {
+  width: 100vw;
+  height: 100vh;
+}
+
+.center {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
 }
 
 input {

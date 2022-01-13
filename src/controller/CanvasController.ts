@@ -1,71 +1,91 @@
-import { MapPosition } from '../model/MapPosition';
-import { WorldMap } from '../model/WorldMap';
+import { WorldMap, MapPosition, CanvasClickPublisher, Animal } from '../model';
 
 type CanvasPosition = [number, number];
-export class CanvasView {
-  private static readonly CANVAS_NAME = '#canvas';
-  private static readonly CANVAS_CONTAINER_NAME = '#canvas-container';
-  private static readonly canvas: HTMLCanvasElement = document.querySelector(
-    CanvasView.CANVAS_NAME
+export const CanvasController = new (class CanvasController extends CanvasClickPublisher {
+  private static readonly CANVAS_SELECTOR = '#canvas';
+  private static readonly CANVAS_CONTAINER_SELECTOR = '#canvas-container';
+
+  private readonly canvas: HTMLCanvasElement = document.querySelector(
+    CanvasController.CANVAS_SELECTOR
   ) as HTMLCanvasElement;
-  private static readonly container: HTMLDivElement = document.querySelector(
-    CanvasView.CANVAS_CONTAINER_NAME
+  private readonly container: HTMLDivElement = document.querySelector(
+    CanvasController.CANVAS_CONTAINER_SELECTOR
   ) as HTMLDivElement;
 
   private readonly context2d: CanvasRenderingContext2D;
 
   // these will be set by handleResize() method.
-  private cellWidth!: number;
-  private cellHeight!: number;
+  private cellWidth = 0;
+  private cellHeight = 0;
 
-  constructor(private readonly map: WorldMap) {
-    const context = CanvasView.canvas.getContext('2d');
+  private map: WorldMap | null = null;
+  private highlightedAnimal: Animal | null = null;
+
+  constructor() {
+    super();
+    const context = this.canvas.getContext('2d');
     if (!context) throw new ReferenceError('Cannot get canvas context');
     this.context2d = context;
 
-    // this.context2d.textAlign = 'center';
-    // this.context2d.textBaseline = 'middle';
+    this.context2d.textAlign = 'center';
+    this.context2d.textBaseline = 'middle';
+  }
 
+  init(map: WorldMap): void {
+    this.map = map;
     this.handleResize();
     this.attachListeners();
+  }
+
+  update(): void {
+    this.clear();
+    this.drawCells();
+    this.drawBorders();
+  }
+
+  setHighlightedAnimal(animal: Animal): void {
+    this.highlightedAnimal = animal;
   }
 
   private attachListeners() {
     window.addEventListener('resize', () => {
       this.handleResize();
-      this.drawMap();
+      this.update();
     });
-    CanvasView.canvas.addEventListener('click', e => {
+    this.canvas.addEventListener('click', e => {
       e.stopPropagation();
-      console.log(this.canvasPosToMapPos([e.offsetX, e.offsetY]));
+      const position = this.canvasPosToMapPos([e.offsetX, e.offsetY]);
+      this.notifyObservers(position);
+      console.log(position);
     });
   }
 
-  clear(): void {
+  private clear(): void {
     this.context2d.fillStyle = 'white';
-    this.context2d.fillRect(0, 0, CanvasView.canvas.width, CanvasView.canvas.height);
+    this.context2d.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  drawBorders(): void {
+  private drawBorders(): void {
     // border around
     this.context2d.beginPath();
-    this.context2d.rect(0, 0, CanvasView.canvas.width, CanvasView.canvas.height);
+    this.context2d.rect(0, 0, this.canvas.width, this.canvas.height);
 
     // vertical cell borders
-    for (let i = this.cellWidth; i < CanvasView.canvas.width; i += this.cellWidth) {
+    for (let i = this.cellWidth; i < this.canvas.width; i += this.cellWidth) {
       this.context2d.moveTo(i, 0);
-      this.context2d.lineTo(i, CanvasView.canvas.height);
+      this.context2d.lineTo(i, this.canvas.height);
     }
 
     // horizontal cell borders
-    for (let i = this.cellHeight; i < CanvasView.canvas.height; i += this.cellHeight) {
+    for (let i = this.cellHeight; i < this.canvas.height; i += this.cellHeight) {
       this.context2d.moveTo(0, i);
-      this.context2d.lineTo(CanvasView.canvas.width, i);
+      this.context2d.lineTo(this.canvas.width, i);
     }
     this.context2d.stroke();
   }
 
-  drawCells(): void {
+  private drawCells(): void {
+    if (!this.map) return;
     // jungle
     const [topLeft, bottomRight] = this.map.jungleBounds;
     const [leftX, topY] = this.mapPosToCanvasPos(topLeft);
@@ -84,9 +104,11 @@ export class CanvasView {
       this.context2d.fillRect(x, y, this.cellWidth, this.cellHeight);
     });
 
-    //temp
+    const specialPos = this.highlightedAnimal?.position;
+
+    //TODO: change color based on animal energy
     this.map.forEachAnimalCell((animals, position) => {
-      this.context2d.fillStyle = 'red';
+      this.context2d.fillStyle = position.equals(specialPos) ? 'orange' : 'red';
 
       const [x, y] = this.mapPosToCanvasPos(position);
       this.context2d.fillRect(x, y, this.cellWidth, this.cellHeight);
@@ -101,12 +123,6 @@ export class CanvasView {
     });
   }
 
-  drawMap(): void {
-    this.clear();
-    this.drawCells();
-    this.drawBorders();
-  }
-
   private mapPosToCanvasPos(mapPos: MapPosition): CanvasPosition {
     return [mapPos.x * this.cellWidth, mapPos.y * this.cellHeight];
   }
@@ -118,27 +134,32 @@ export class CanvasView {
   }
 
   private handleResize(): void {
-    const style = window.getComputedStyle(CanvasView.container);
-
+    if (!this.map) return;
+    const style = window.getComputedStyle(this.container);
+    console.log('style', style.width, style.height);
     // prettier-ignore
-    const [containerWidth, containerHeight] = [style.width, style.height].map(el => parseInt(el));
+    // const [containerWidth, containerHeight] = [style.width, style.height].map(el => parseInt(el));
+    const [containerWidth, containerHeight] = [this.container.clientWidth, this.container.clientHeight];
+    console.log('container', containerWidth, containerHeight);
 
     // calculate width and height as a common multiple of window size and map size.
     const height = Math.floor(containerHeight / this.map.height) * this.map.height;
     const width = Math.floor(containerWidth / this.map.width) * this.map.width;
 
     const mapRatio = this.map.width / this.map.height;
-    CanvasView.canvas.height = Math.min(width / mapRatio, height);
-    CanvasView.canvas.width = Math.min(height * mapRatio, width);
-    this.cellWidth = Math.floor(CanvasView.canvas.width / this.map.width);
-    this.cellHeight = Math.floor(CanvasView.canvas.height / this.map.height);
+    this.canvas.height = Math.min(width / mapRatio, height);
+    this.canvas.width = Math.min(height * mapRatio, width);
+    this.cellWidth = Math.floor(this.canvas.width / this.map.width);
+    this.cellHeight = Math.floor(this.canvas.height / this.map.height);
+
+    console.log(this.cellHeight, this.cellWidth);
   }
 
-  static showCanvas(): void {
+  showCanvas(): void {
     this.container.style.display = '';
   }
 
-  static hideCanvas(): void {
+  hideCanvas(): void {
     this.container.style.display = 'none';
   }
-}
+})();

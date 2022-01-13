@@ -1,8 +1,5 @@
-import { MapPosition } from './MapPosition';
-import { WorldMap } from './WorldMap';
-import { Animal, Grass } from '.';
-import { remove } from 'lodash-es';
-import { Config, Energy } from '.';
+import { Animal, Grass, Config, Energy, WorldMap, MapPosition, SimulationDate } from '.';
+import { remove, countBy } from 'lodash-es';
 
 export class SimulationEngine {
   public readonly map: WorldMap;
@@ -12,8 +9,8 @@ export class SimulationEngine {
   private readonly moveEnergy: Energy;
   private readonly grassEnergy: Energy;
   private deadAnimalCount = 0;
+  private totalAnimalAge = 0;
 
-  // TODO: average lifespan, dominating genotype.
   constructor(config: Config) {
     const {
       width,
@@ -32,6 +29,23 @@ export class SimulationEngine {
     this.populateMap(startAnimalCount);
   }
 
+  get aliveAnimals(): number {
+    return this.animalList.length;
+  }
+
+  get averageAnimalDeathAge(): SimulationDate {
+    return this.totalAnimalAge / this.deadAnimalCount || 0;
+  }
+
+  //TODO: optimisation - e.g. add a map of alive genotypes, updated with each death/birth
+  get dominatingGenome(): string | null {
+    if (this.aliveAnimals === 0) return null;
+    const genomes = this.animalList.map(animal => animal.myGenes.toString());
+    const genomeOccurences = Object.entries(countBy(genomes));
+    genomeOccurences.sort(([, occurence1], [, occurence2]) => occurence1 - occurence2);
+    return genomeOccurences[0][0];
+  }
+
   private populateMap(startAnimalCount: number): void {
     for (let i = 0; i < startAnimalCount; i++) {
       const animal = new Animal(this.map);
@@ -43,6 +57,7 @@ export class SimulationEngine {
   private removeDeadAnimals(): void {
     remove(this.animalList, animal => {
       if (animal.isDead) {
+        this.totalAnimalAge += this.map.today - animal.birthDay;
         this.deadAnimalCount++;
         this.map.removeAnimal(animal);
         return true;
@@ -65,6 +80,7 @@ export class SimulationEngine {
         if (parent1.energy > this.energyToBreed && parent2.energy > this.energyToBreed) {
           const child = new Animal(this.map, parent1, parent2);
           this.map.putAnimal(child);
+          this.animalList.push(child);
         }
       }
     });
@@ -98,6 +114,7 @@ export class SimulationEngine {
   }
 
   public nextDay(): void {
+    this.map.nextDay();
     this.moveAnimals();
     this.removeDeadAnimals();
     this.eatGrass();

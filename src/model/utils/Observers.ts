@@ -1,6 +1,5 @@
-import { Config } from '.';
-import { MapPosition } from '../MapPosition';
-import { PositionChangePublisher } from './Publishers';
+import { MapPosition } from '..';
+import { Config, PositionChangePublisher } from '.';
 
 export interface IPositionChangeObserver {
   positionChanged(
@@ -11,7 +10,7 @@ export interface IPositionChangeObserver {
 }
 
 export interface IConfigSubmitObserver {
-  formSubmitted(config: Config): void;
+  configSubmitted(config: Config): void;
 }
 
 export interface ICanvasClickObserver {

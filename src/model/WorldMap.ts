@@ -1,7 +1,13 @@
+import {
+  IPositionChangeObserver,
+  PositionChangePublisher,
+  SimulationDate,
+  MapPosition,
+  Animal,
+  Entity,
+  Grass,
+} from '.';
 import { random, remove } from 'lodash-es';
-import { Animal, Entity, Grass } from './Entities';
-import { MapPosition } from './MapPosition';
-import { IPositionChangeObserver, PositionChangePublisher, SimulationDate } from './utils';
 
 export class WorldMap implements IPositionChangeObserver {
   private _today: SimulationDate = 0;
@@ -17,7 +23,6 @@ export class WorldMap implements IPositionChangeObserver {
     public readonly energyPassedToChild: number,
     jungleRatio: number
   ) {
-    // tu sie cos rozjebalo
     const topLeft = new MapPosition(
       Math.floor((width * (1 - jungleRatio)) / 2),
       Math.floor((height * (1 - jungleRatio)) / 2)
@@ -31,6 +36,11 @@ export class WorldMap implements IPositionChangeObserver {
     this.jungle = new Jungle(topLeft, bottomRight);
     this.animalMap = new EntityMap(width, height);
     this.grassMap = new EntityMap(width, height);
+  }
+
+  nextDay(): void {
+    this._today++;
+    // this.animalMap.forEach(animals => console.log(animals));
   }
 
   get today(): SimulationDate {

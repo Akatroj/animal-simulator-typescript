@@ -8,10 +8,10 @@
     <link href="index.css" rel="stylesheet" />
   </head>
 
-  <body class="container">
-    <div class="container outer-container">
-      <div class="form-container container">
-        <form id="config" class="container">
+  <body class="center">
+    <div class="outer-container center">
+      <div id="form-container" class="center">
+        <form id="config" class="center">
           <div class="input-wrapper">
             <input type="number" name="width" min="0" max="100" required />
             <label for="width">Map Width</label>
@@ -63,22 +63,22 @@
           <button type="submit">Submit</button>
         </form>
       </div>
-      <div id="simulation-container">
-        <div id="canvas-container" class="container">
+      <div id="simulation-container" class="center">
+        <div id="canvas-container" class="center">
           <canvas id="canvas"></canvas>
         </div>
         <div id="stats-container">
-          <div id="globalStats" class="container">
-            <span>Day: <span id="day">0</span></span>
-            <span>Animals alive curently: <span id="alive">0</span></span>
-            <span>Dominating genotype: <span id="genotype">none</span></span>
-            <span>Average animal lifespan: <span id="lifespan">0</span></span>
+          <div id="globalStats" class="center">
+            <span id="date">Day: 0</span>
+            <span id="alive">Animals alive curently: 0</span>
+            <span id="genome">Dominating genome: none</span>
+            <span id="lifespan">Average animal lifespan: 0</span>
           </div>
-          <div id="selectedStats" class="container">
-            <span>Selected animal: <span id="animalName">Animal</span></span>
-            <span>Genotype: <span id="selectedGenotype">none</span></span>
-            <span>Children count: <span id="childrenCount">0</span></span>
-            <span>Status: <span id="status">dead</span></span>
+          <div id="selectedStats" class="center">
+            <span id="animalName">Selected animal: Animal</span>
+            <span id="selectedGenome">Genome:none</span>
+            <span id="childrenCount">Children count: 0</span>
+            <span id="status">Status: dead</span>
           </div>
         </div>
       </div>

@@ -18,4 +18,9 @@ export class MapPosition {
   toArray(): [number, number] {
     return [this.x, this.y];
   }
+
+  equals(other: unknown): boolean {
+    if (!(other instanceof MapPosition)) return false;
+    return this.x === other.x && this.y === other.y;
+  }
 }

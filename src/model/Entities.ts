@@ -8,12 +8,13 @@ import { Energy, SimulationDate } from './utils';
 export type Entity = Animal | Grass;
 export class Animal extends PositionChangePublisher {
   public readonly birthDay: SimulationDate;
+  public readonly myGenes: Genome;
 
-  private readonly myGenes: Genome;
-  private _position: MapPosition;
   private direction: Directions;
-  private _energy: Energy;
   private deathDate: SimulationDate | null = null;
+  private _position: MapPosition;
+  private _energy: Energy;
+  private _childCount = 0;
 
   constructor(map: WorldMap);
   constructor(map: WorldMap, parent1: Animal, parent2: Animal);
@@ -29,6 +30,9 @@ export class Animal extends PositionChangePublisher {
       this._energy = energyFromParent1 + energyFromParent2;
       this._position = parent1._position;
       this.myGenes = new Genome(parent1.myGenes, parent2.myGenes);
+
+      parent1._childCount++;
+      parent2._childCount++;
     } else {
       this._energy = map.startEnergy;
       this._position = map.getRandomPosition();
@@ -56,6 +60,10 @@ export class Animal extends PositionChangePublisher {
 
   get isDead(): boolean {
     return this.deathDate !== null;
+  }
+
+  get childCount(): number {
+    return this._childCount;
   }
 
   get energy(): Energy {
