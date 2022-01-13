@@ -4,3 +4,4 @@ export * from './Genome';
 export * from './MapPosition';
 export * from './WorldMap';
 export * from './utils';
+export * from './SimulationEngine';

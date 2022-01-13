@@ -63,8 +63,24 @@
           <button type="submit">Submit</button>
         </form>
       </div>
-      <div id="canvas-container" class="container">
-        <canvas id="canvas"></canvas>
+      <div id="simulation-container">
+        <div id="canvas-container" class="container">
+          <canvas id="canvas"></canvas>
+        </div>
+        <div id="stats-container">
+          <div id="globalStats" class="container">
+            <span>Day: <span id="day">0</span></span>
+            <span>Animals alive curently: <span id="alive">0</span></span>
+            <span>Dominating genotype: <span id="genotype">none</span></span>
+            <span>Average animal lifespan: <span id="lifespan">0</span></span>
+          </div>
+          <div id="selectedStats" class="container">
+            <span>Selected animal: <span id="animalName">Animal</span></span>
+            <span>Genotype: <span id="selectedGenotype">none</span></span>
+            <span>Children count: <span id="childrenCount">0</span></span>
+            <span>Status: <span id="status">dead</span></span>
+          </div>
+        </div>
       </div>
     </div>
 

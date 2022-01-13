@@ -1,9 +1,10 @@
-import { MapPosition } from './../model/MapPosition';
-import { WorldMap } from './../model/WorldMap';
-import { Animal, Grass } from '../model';
+import { MapPosition } from './MapPosition';
+import { WorldMap } from './WorldMap';
+import { Animal, Grass } from '.';
 import { remove } from 'lodash-es';
-import { Config, Energy } from '../model';
-export class SimulationController {
+import { Config, Energy } from '.';
+
+export class SimulationEngine {
   public readonly map: WorldMap;
 
   private readonly animalList: Animal[] = [];
@@ -12,7 +13,7 @@ export class SimulationController {
   private readonly grassEnergy: Energy;
   private deadAnimalCount = 0;
 
-  // TODO:
+  // TODO: average lifespan, dominating genotype.
   constructor(config: Config) {
     const {
       width,

@@ -121,7 +121,7 @@ export class CanvasView {
     const style = window.getComputedStyle(CanvasView.container);
 
     // prettier-ignore
-    const [containerWidth, containerHeight] = [style.width, style.height].map(el =>parseInt(el));
+    const [containerWidth, containerHeight] = [style.width, style.height].map(el => parseInt(el));
 
     // calculate width and height as a common multiple of window size and map size.
     const height = Math.floor(containerHeight / this.map.height) * this.map.height;
