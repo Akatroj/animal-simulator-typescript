@@ -25,8 +25,8 @@ export class Genome {
         { length: Genome.GENOME_SIZE },
         () => random(Genome.GENE_POOL_SIZE - 1) as Gene
       );
-      this.fixGenome();
     }
+    this.fixGenome();
   }
 
   get randomGene(): Gene {

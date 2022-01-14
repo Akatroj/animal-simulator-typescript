@@ -6,16 +6,16 @@ export const GlobalStatsController = new (class GlobalStatsController {
   private static readonly DOMINATING_GENOME_SELECTOR = '#genome';
   private static readonly AVERAGE_LIFESPAN_SELECTOR = '#lifespan';
 
-  private readonly SIMUALTION_DATE: HTMLSpanElement = document.querySelector(
+  private readonly simualtionDateSpan: HTMLSpanElement = document.querySelector(
     GlobalStatsController.SIMULATION_DATE_SELECTOR
   ) as HTMLSpanElement;
-  private readonly ALIVE_ANIMALS: HTMLSpanElement = document.querySelector(
+  private readonly aliveAnimalsSpan: HTMLSpanElement = document.querySelector(
     GlobalStatsController.ALIVE_ANIMALS_SELECTOR
   ) as HTMLSpanElement;
-  private readonly DOMINATING_GENOME: HTMLSpanElement = document.querySelector(
+  private readonly dominatingGenomeSpan: HTMLSpanElement = document.querySelector(
     GlobalStatsController.DOMINATING_GENOME_SELECTOR
   ) as HTMLSpanElement;
-  private readonly AVERAGE_LIFESPAN: HTMLSpanElement = document.querySelector(
+  private readonly averageLifespanSpan: HTMLSpanElement = document.querySelector(
     GlobalStatsController.AVERAGE_LIFESPAN_SELECTOR
   ) as HTMLSpanElement;
 
@@ -35,10 +35,10 @@ export const GlobalStatsController = new (class GlobalStatsController {
   }
 
   update(): void {
-    this.SIMUALTION_DATE.innerText = this.simulationDate();
-    this.ALIVE_ANIMALS.innerText = this.animalsAlive();
-    this.DOMINATING_GENOME.innerText = this.dominatingGenome();
-    this.AVERAGE_LIFESPAN.innerText = this.averageLifespan();
+    this.simualtionDateSpan.innerText = this.simulationDate();
+    this.aliveAnimalsSpan.innerText = this.animalsAlive();
+    this.dominatingGenomeSpan.innerText = this.dominatingGenome();
+    this.averageLifespanSpan.innerText = this.averageLifespan();
   }
 })();
 
@@ -49,18 +49,23 @@ export const AnimalStatsController = new (class AnimalStatsController {
   private static readonly SELECTED_GENOME_SELECTOR = '#selectedGenome';
   private static readonly CHILDREN_COUNT_SELECTOR = '#childrenCount';
   private static readonly ANIMAL_STATUS_SELECTOR = '#status';
+  private static readonly ANIMAL_ENERGY_SELECTOR = '#energy';
 
-  private readonly ANIMAL_NAME: HTMLSpanElement = document.querySelector(
+  private readonly animalNameSpan: HTMLSpanElement = document.querySelector(
     AnimalStatsController.ANIMAL_NAME_SELECTOR
   ) as HTMLSpanElement;
-  private readonly SELECTED_GENOME: HTMLSpanElement = document.querySelector(
+  private readonly selectedGenomeSpan: HTMLSpanElement = document.querySelector(
     AnimalStatsController.SELECTED_GENOME_SELECTOR
   ) as HTMLSpanElement;
-  private readonly CHILDREN_COUNT: HTMLSpanElement = document.querySelector(
+  private readonly childrenCountSpan: HTMLSpanElement = document.querySelector(
     AnimalStatsController.CHILDREN_COUNT_SELECTOR
   ) as HTMLSpanElement;
-  private readonly ANIMAL_STATUS: HTMLSpanElement = document.querySelector(
+  private readonly animalStatusSpan: HTMLSpanElement = document.querySelector(
     AnimalStatsController.ANIMAL_STATUS_SELECTOR
+  ) as HTMLSpanElement;
+
+  private readonly animalEnergySpan: HTMLSpanElement = document.querySelector(
+    AnimalStatsController.ANIMAL_ENERGY_SELECTOR
   ) as HTMLSpanElement;
 
   private readonly animalName = () => `Selected animal: ${this.name}`;
@@ -70,15 +75,17 @@ export const AnimalStatsController = new (class AnimalStatsController {
     `Children count: ${this._selectedAnimal?.childCount ?? 0}`;
   private readonly animalStatus = () =>
     `Status: ${this._selectedAnimal?.isDead ? 'dead' : 'alive'}`;
+  private readonly animalEnergy = () => `Energy: ${this._selectedAnimal?.energy ?? 0}`;
 
   private _selectedAnimal: Animal | null = null;
   private name = 'None';
 
   update(): void {
-    this.ANIMAL_NAME.innerText = this.animalName();
-    this.SELECTED_GENOME.innerText = this.animalGenome();
-    this.CHILDREN_COUNT.innerText = this.animalChildrenCount();
-    this.ANIMAL_STATUS.innerText = this.animalStatus();
+    this.animalNameSpan.innerText = this.animalName();
+    this.selectedGenomeSpan.innerText = this.animalGenome();
+    this.childrenCountSpan.innerText = this.animalChildrenCount();
+    this.animalStatusSpan.innerText = this.animalStatus();
+    this.animalEnergySpan.innerText = this.animalEnergy();
   }
 
   setAnimal(animal: Animal, name: string | null): void {

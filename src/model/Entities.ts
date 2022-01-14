@@ -72,8 +72,9 @@ export class Animal extends PositionChangePublisher {
 
   set energy(energy: Energy) {
     this._energy = energy;
-    if (energy < 0) {
+    if (energy <= 0) {
       this.deathDate = this.map.today;
+      this._energy = 0;
     }
   }
 }

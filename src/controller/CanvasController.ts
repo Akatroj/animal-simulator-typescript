@@ -85,8 +85,22 @@ export const CanvasController = new (class CanvasController extends CanvasClickP
   }
 
   private drawCells(): void {
+    this.drawJungleCells();
+    this.drawGrassCells();
+    this.drawAnimalCells();
+  }
+
+  private drawGrassCells() {
     if (!this.map) return;
-    // jungle
+    this.context2d.fillStyle = 'green';
+    this.map.forEachGrassCell((grass, pos) => {
+      const [x, y] = this.mapPosToCanvasPos(pos);
+      this.context2d.fillRect(x, y, this.cellWidth, this.cellHeight);
+    });
+  }
+
+  private drawJungleCells() {
+    if (!this.map) return;
     const [topLeft, bottomRight] = this.map.jungleBounds;
     const [leftX, topY] = this.mapPosToCanvasPos(topLeft);
     const [rightX, bottomY] = this.mapPosToCanvasPos(bottomRight);
@@ -97,30 +111,43 @@ export const CanvasController = new (class CanvasController extends CanvasClickP
 
     this.context2d.fillStyle = 'lime';
     this.context2d.fillRect(leftX, topY, width, height);
+  }
 
-    this.context2d.fillStyle = 'green';
-    this.map.forEachGrassCell((grass, pos) => {
-      const [x, y] = this.mapPosToCanvasPos(pos);
-      this.context2d.fillRect(x, y, this.cellWidth, this.cellHeight);
-    });
-
-    const specialPos = this.highlightedAnimal?.position;
+  private drawAnimalCells() {
+    if (!this.map) return;
 
     //TODO: change color based on animal energy
     this.map.forEachAnimalCell((animals, position) => {
-      this.context2d.fillStyle = position.equals(specialPos) ? 'orange' : 'red';
-
-      const [x, y] = this.mapPosToCanvasPos(position);
-      this.context2d.fillRect(x, y, this.cellWidth, this.cellHeight);
-
-      this.context2d.fillStyle = 'black';
-
-      this.context2d.fillText(
-        animals.length.toFixed(),
-        x + this.cellWidth / 2,
-        y + this.cellHeight / 2
-      );
+      this.drawAnimalCell(position, 'red', animals.length);
     });
+    if (this.highlightedAnimal && !this.highlightedAnimal.isDead) {
+      const highlightedPosition = this.highlightedAnimal.position;
+      console.log(highlightedPosition);
+      this.drawAnimalCell(
+        highlightedPosition,
+        'orange',
+        this.map.getAnimals(highlightedPosition)?.length
+      );
+    }
+  }
+
+  private drawAnimalCell(
+    position: MapPosition,
+    color: string,
+    amount: number | undefined
+  ): void {
+    this.context2d.fillStyle = color;
+
+    const [x, y] = this.mapPosToCanvasPos(position);
+    this.context2d.fillRect(x, y, this.cellWidth, this.cellHeight);
+
+    this.context2d.fillStyle = 'black';
+
+    this.context2d.fillText(
+      amount?.toFixed() ?? '0',
+      x + this.cellWidth / 2,
+      y + this.cellHeight / 2
+    );
   }
 
   private mapPosToCanvasPos(mapPos: MapPosition): CanvasPosition {
@@ -135,12 +162,11 @@ export const CanvasController = new (class CanvasController extends CanvasClickP
 
   private handleResize(): void {
     if (!this.map) return;
-    const style = window.getComputedStyle(this.container);
-    console.log('style', style.width, style.height);
-    // prettier-ignore
-    // const [containerWidth, containerHeight] = [style.width, style.height].map(el => parseInt(el));
-    const [containerWidth, containerHeight] = [this.container.clientWidth, this.container.clientHeight];
-    console.log('container', containerWidth, containerHeight);
+
+    const [containerWidth, containerHeight] = [
+      this.container.clientWidth,
+      this.container.clientHeight,
+    ];
 
     // calculate width and height as a common multiple of window size and map size.
     const height = Math.floor(containerHeight / this.map.height) * this.map.height;
@@ -151,8 +177,6 @@ export const CanvasController = new (class CanvasController extends CanvasClickP
     this.canvas.width = Math.min(height * mapRatio, width);
     this.cellWidth = Math.floor(this.canvas.width / this.map.width);
     this.cellHeight = Math.floor(this.canvas.height / this.map.height);
-
-    console.log(this.cellHeight, this.cellWidth);
   }
 
   showCanvas(): void {

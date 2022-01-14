@@ -7,9 +7,9 @@ export const ConfigController = new (class ConfigController extends ConfigSubmit
     startEnergy: 100,
     jungleRatio: 0.3,
     energyPassedToChild: 0.5,
-    moveEnergy: 1,
+    moveEnergy: 10,
     startAnimalCount: 10,
-    grassEnergy: 100,
+    grassEnergy: 70,
     dayLength: 1000,
   } as const;
 

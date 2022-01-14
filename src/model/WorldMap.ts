@@ -64,7 +64,8 @@ export class WorldMap implements IPositionChangeObserver {
   }
 
   wrapPosition(pos: MapPosition): MapPosition {
-    return new MapPosition(pos.x % this.width, pos.y % this.height);
+    const mod = (a: number, n: number): number => ((a % n) + n) % n; // returns positive value for negative a
+    return new MapPosition(mod(pos.x, this.width), mod(pos.y, this.height));
   }
 
   positionChanged(
