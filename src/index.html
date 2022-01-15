@@ -13,18 +13,19 @@
       <div id="form-container" class="center">
         <form id="config" class="center">
           <div class="input-wrapper">
-            <input type="number" name="width" min="0" max="100" required />
             <label for="width">Map Width</label>
+            <input type="number" name="width" min="0" max="100" required />
           </div>
           <div class="input-wrapper">
-            <input type="number" name="height" min="0" max="100" required />
             <label for="height">Map Height</label>
+            <input type="number" name="height" min="0" max="100" required />
           </div>
           <div class="input-wrapper">
-            <input type="number" name="startEnergy" min="0" max="10000" required />
             <label for="startEnergy">Animal starting energy</label>
+            <input type="number" name="startEnergy" min="0" max="10000" required />
           </div>
           <div class="input-wrapper">
+            <label for="energyPassedToChild">Energy passed to child</label>
             <input
               type="number"
               name="energyPassedToChild"
@@ -32,9 +33,9 @@
               step="0.01"
               required
             />
-            <label for="energyPassedToChild">Energy passed to child</label>
           </div>
           <div class="input-wrapper">
+            <label for="jungleRatio">Jungle ratio</label>
             <input
               type="number"
               name="jungleRatio"
@@ -42,23 +43,22 @@
               step="0.01"
               required
             />
-            <label for="jungleRatio">Jungle ratio</label>
           </div>
           <div class="input-wrapper">
-            <input type="number" name="moveEnergy" min="0" max="1000" required />
             <label for="moveEnergy">Energy required per move</label>
+            <input type="number" name="moveEnergy" min="0" max="1000" required />
           </div>
           <div class="input-wrapper">
-            <input type="number" name="startAnimalCount" min="2" max="1000" required />
             <label for="startAnimalCount">Number of animals at the start</label>
+            <input type="number" name="startAnimalCount" min="2" max="1000" required />
           </div>
           <div class="input-wrapper">
-            <input type="number" name="grassEnergy" min="0" max="1000" required />
             <label for="grassEnergy">Energy gained from grass</label>
+            <input type="number" name="grassEnergy" min="0" max="1000" required />
           </div>
           <div class="input-wrapper">
-            <input type="number" name="dayLength" min="10" max="1000" required />
             <label for="grassEnergy">Day length</label>
+            <input type="number" name="dayLength" min="10" max="1000" required />
           </div>
           <button type="submit">Submit</button>
         </form>
