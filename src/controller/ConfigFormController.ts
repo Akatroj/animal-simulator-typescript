@@ -26,6 +26,7 @@ export const ConfigController = new (class ConfigController extends ConfigSubmit
   ) as HTMLDivElement;
 
   private config: Config;
+  private ready = false;
 
   constructor() {
     super();
@@ -34,8 +35,18 @@ export const ConfigController = new (class ConfigController extends ConfigSubmit
   }
 
   init(): void {
+    if (this.ready) return;
     this.fillForm();
-    this.attachListener();
+    this.attachListeners();
+    this.ready = true;
+  }
+
+  showForm(): void {
+    ConfigController.formContainer.style.display = '';
+  }
+
+  hideForm(): void {
+    ConfigController.formContainer.style.display = 'none';
   }
 
   private saveConfig(): void {
@@ -49,7 +60,7 @@ export const ConfigController = new (class ConfigController extends ConfigSubmit
     });
   }
 
-  private attachListener(): void {
+  private attachListeners(): void {
     ConfigController.form.addEventListener('submit', e => {
       e.preventDefault();
       const formData = new FormData(ConfigController.form);
@@ -70,13 +81,5 @@ export const ConfigController = new (class ConfigController extends ConfigSubmit
       this.saveConfig();
       this.notifyObservers(this.config);
     });
-  }
-
-  showForm(): void {
-    ConfigController.formContainer.style.display = '';
-  }
-
-  hideForm(): void {
-    ConfigController.formContainer.style.display = 'none';
   }
 })();

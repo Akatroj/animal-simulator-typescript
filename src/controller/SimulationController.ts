@@ -1,21 +1,9 @@
-import {
-  CanvasController,
-  ConfigController,
-  GlobalStatsController,
-  AnimalStatsController,
-} from '.';
-import {
-  Animal,
-  Config,
-  IConfigSubmitObserver,
-  MapPosition,
-  SimulationEngine,
-  ICanvasClickObserver,
-} from '../model';
+import { CanvasController, GlobalStatsController, AnimalStatsController } from '.';
+import { Animal, Config, MapPosition, SimulationEngine, ICanvasClickObserver } from '../model';
 
 // static class implementing interface hack
 export const SimulationController = new (class SimulationController
-  implements IConfigSubmitObserver, ICanvasClickObserver
+  implements ICanvasClickObserver
 {
   private static readonly SIMULATION_CONTAINER_SELECTOR = '#simulation-container';
   private readonly simulationContainer = document.querySelector(
@@ -26,24 +14,13 @@ export const SimulationController = new (class SimulationController
   private config: Config | null = null;
   private _running = false;
   private lastUpdate = 0;
+  private ready = false;
 
   init(): void {
+    if (this.ready) return;
     this.hideSimulation();
-    ConfigController.init();
-    ConfigController.addObserver(this);
     CanvasController.addObserver(this);
-  }
-
-  configSubmitted(config: Config): void {
-    this.config = config;
-    this.simulationEngine = new SimulationEngine(config);
-    GlobalStatsController.setEngine(this.simulationEngine);
-
-    ConfigController.hideForm();
-    this.showSimulation();
-    CanvasController.init(this.simulationEngine.map); // IMPORTANT: init after the canvas element is visible
-
-    this.startSimulation();
+    this.ready = true;
   }
 
   canvasClicked(pos: MapPosition): void {
@@ -56,18 +33,43 @@ export const SimulationController = new (class SimulationController
     }
   }
 
+  setConfig(config: Config): void {
+    this.config = config;
+    this.simulationEngine = new SimulationEngine(config);
+    CanvasController.setMap(this.simulationEngine.map);
+    GlobalStatsController.setEngine(this.simulationEngine);
+  }
+
   get running(): boolean {
     return this._running;
   }
 
-  private stopSimulation(): void {
-    this._running = false;
-    window.alert('All animals are dead.');
+  showSimulation(): void {
+    this.simulationContainer.style.display = '';
   }
 
-  private startSimulation(): void {
+  hideSimulation(): void {
+    this.simulationContainer.style.display = 'none';
+  }
+
+  startSimulation(): void {
+    if (!this.ready || !this.simulationEngine) return;
     this._running = true;
     window.requestAnimationFrame(() => this.update(performance.now()));
+  }
+
+  pauseSimulation(): void {
+    this._running = false;
+  }
+
+  toggleSimulation(): void {
+    if (this._running) this.pauseSimulation();
+    else this.startSimulation();
+  }
+
+  private stopSimulation(): void {
+    this.pauseSimulation();
+    window.alert('All animals are dead.');
   }
 
   private nextStep(): void {
@@ -85,13 +87,5 @@ export const SimulationController = new (class SimulationController
       this.lastUpdate = time;
       this.nextStep();
     }
-  }
-
-  private showSimulation(): void {
-    this.simulationContainer.style.display = '';
-  }
-
-  private hideSimulation(): void {
-    this.simulationContainer.style.display = 'none';
   }
 })();

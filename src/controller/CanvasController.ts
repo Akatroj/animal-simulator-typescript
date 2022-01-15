@@ -20,6 +20,7 @@ export const CanvasController = new (class CanvasController extends CanvasClickP
 
   private map: WorldMap | null = null;
   private highlightedAnimal: Animal | null = null;
+  private ready = false;
 
   constructor() {
     super();
@@ -31,10 +32,15 @@ export const CanvasController = new (class CanvasController extends CanvasClickP
     this.context2d.textBaseline = 'middle';
   }
 
-  init(map: WorldMap): void {
+  init(): void {
+    if (this.ready) return;
+    this.attachListeners();
+    this.ready = true;
+  }
+
+  setMap(map: WorldMap): void {
     this.map = map;
     this.handleResize();
-    this.attachListeners();
   }
 
   update(): void {
@@ -45,6 +51,14 @@ export const CanvasController = new (class CanvasController extends CanvasClickP
 
   setHighlightedAnimal(animal: Animal): void {
     this.highlightedAnimal = animal;
+  }
+
+  showCanvas(): void {
+    this.container.style.display = '';
+  }
+
+  hideCanvas(): void {
+    this.container.style.display = 'none';
   }
 
   private attachListeners() {
@@ -122,7 +136,7 @@ export const CanvasController = new (class CanvasController extends CanvasClickP
     });
     if (this.highlightedAnimal && !this.highlightedAnimal.isDead) {
       const highlightedPosition = this.highlightedAnimal.position;
-      console.log(highlightedPosition);
+      // console.log(highlightedPosition);
       this.drawAnimalCell(
         highlightedPosition,
         'orange',
@@ -177,13 +191,5 @@ export const CanvasController = new (class CanvasController extends CanvasClickP
     this.canvas.width = Math.min(height * mapRatio, width);
     this.cellWidth = Math.floor(this.canvas.width / this.map.width);
     this.cellHeight = Math.floor(this.canvas.height / this.map.height);
-  }
-
-  showCanvas(): void {
-    this.container.style.display = '';
-  }
-
-  hideCanvas(): void {
-    this.container.style.display = 'none';
   }
 })();

@@ -86,6 +86,12 @@ export const AnimalStatsController = new (class AnimalStatsController {
     this.childrenCountSpan.innerText = this.animalChildrenCount();
     this.animalStatusSpan.innerText = this.animalStatus();
     this.animalEnergySpan.innerText = this.animalEnergy();
+
+    // TODO: move this somewhere else
+    if (this._selectedAnimal?.isDead) {
+      this._selectedAnimal = null;
+      window.alert(`${this.name} has died.`);
+    }
   }
 
   setAnimal(animal: Animal, name: string | null): void {
