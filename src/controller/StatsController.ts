@@ -22,8 +22,7 @@ export const GlobalStatsController = new (class GlobalStatsController {
   private readonly simulationDate = () => `Day: ${this.engine?.map.today ?? 0}`;
   private readonly animalsAlive = () =>
     `Animals alive curently: ${this.engine?.aliveAnimals ?? 0}`;
-  private readonly dominatingGenome = () =>
-    `Dominating genome: ${this.engine?.dominatingGenome ?? 'none'}`;
+  private readonly dominatingGenome = () => `${this.engine?.dominatingGenome ?? 'none'}`;
   private readonly averageLifespan = () =>
     `Average animal lifespan: ${this.engine?.averageAnimalDeathAge.toFixed(2) ?? 0}`;
 
@@ -70,7 +69,7 @@ export const AnimalStatsController = new (class AnimalStatsController {
 
   private readonly animalName = () => `Selected animal: ${this.name}`;
   private readonly animalGenome = () =>
-    `Genome: ${this._selectedAnimal?.myGenes.toString() ?? 'none'}`;
+    `${this._selectedAnimal?.myGenes.toString() ?? 'none'}`;
   private readonly animalChildrenCount = () =>
     `Children count: ${this._selectedAnimal?.childCount ?? 0}`;
   private readonly animalStatus = () =>
@@ -81,6 +80,7 @@ export const AnimalStatsController = new (class AnimalStatsController {
   private name = 'None';
 
   update(): void {
+    if (!this._selectedAnimal) return;
     this.animalNameSpan.innerText = this.animalName();
     this.selectedGenomeSpan.innerText = this.animalGenome();
     this.childrenCountSpan.innerText = this.animalChildrenCount();
@@ -88,7 +88,7 @@ export const AnimalStatsController = new (class AnimalStatsController {
     this.animalEnergySpan.innerText = this.animalEnergy();
 
     // TODO: move this somewhere else
-    if (this._selectedAnimal?.isDead) {
+    if (this._selectedAnimal.isDead) {
       this._selectedAnimal = null;
       window.alert(`${this.name} has died.`);
     }
