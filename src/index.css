@@ -127,8 +127,9 @@ input::-webkit-inner-spin-button {
 
 #form-container input,
 #form-container button {
+  box-sizing: border-box;
   width: 100%;
-  height: 1em;
+  height: 1.75em;
   padding: 0.5rem 0.7rem;
   margin: 0.25rem 0;
 
