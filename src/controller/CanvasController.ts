@@ -1,4 +1,5 @@
 import { WorldMap, MapPosition, CanvasClickPublisher, Animal } from '../model';
+import { debounce } from 'lodash-es';
 
 type CanvasPosition = [number, number];
 export const CanvasController = new (class CanvasController extends CanvasClickPublisher {
@@ -63,8 +64,10 @@ export const CanvasController = new (class CanvasController extends CanvasClickP
 
   private attachListeners() {
     window.addEventListener('resize', () => {
-      this.handleResize();
-      this.update();
+      debounce(() => {
+        this.handleResize();
+        this.update();
+      }, 100);
     });
     this.canvas.addEventListener('click', e => {
       e.stopPropagation();
