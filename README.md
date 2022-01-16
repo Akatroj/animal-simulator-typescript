@@ -1,5 +1,5 @@
 # animal-simulator-typescript
-Idle game about animal evolution written with typescript
+You can play the simulation [here](https://akatroj.github.io/animal-simulator-typescript/)
 
 # About
 This is an idle game about animal evolution. Each day, every animal:
