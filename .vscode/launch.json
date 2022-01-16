@@ -5,16 +5,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "vscode-edge-devtools.debug",
+      "type": "pwa-chrome",
       "request": "launch",
-      "name": "Launch Microsoft Edge and open the Edge DevTools",
+      "name": "Launch Chrome against localhost",
       "url": "http://localhost:1234",
       "webRoot": "${workspaceFolder}"
     },
     {
-      "type": "pwa-chrome",
+      "type": "vscode-edge-devtools.debug",
       "request": "launch",
-      "name": "Launch Chrome against localhost",
+      "name": "Launch Microsoft Edge and open the Edge DevTools",
       "url": "http://localhost:1234",
       "webRoot": "${workspaceFolder}"
     }

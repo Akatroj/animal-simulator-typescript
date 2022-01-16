@@ -56,6 +56,7 @@ export const CanvasController = new (class CanvasController extends CanvasClickP
 
   showCanvas(): void {
     this.container.style.display = '';
+    this.handleResize();
   }
 
   hideCanvas(): void {
